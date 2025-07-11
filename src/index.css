@@ -1,0 +1,66 @@
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap");
+
+@import "tailwindcss";
+
+:root {
+  --primary-color: #4fb74c;
+  --skeleton-color: #e0e0e0;
+}
+
+@theme {
+  --color-primary: var(--primary-color);
+  --color-skeleton: var(--skeleton-color);
+}
+
+@layer {
+  body {
+    font-family: "Open Sans", sans-serif;
+    font-size: 14px;
+  }
+
+  button {
+    cursor: pointer;
+  }
+}
+
+@layer components {
+  .wrapper {
+    @apply container mx-auto px-4;
+  }
+
+  .search-banner {
+    background-image: url("/src/assets/images/banner.png");
+    position: relative;
+  }
+
+  .menu-item {
+    @apply cursor-pointer hover:text-primary text-sm font-medium transition-colors duration-300;
+  }
+
+  .menu-item a.active {
+    @apply font-semibold text-primary;
+  }
+}
+
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #ccc #f0f0f0;
+}
+
+.animate-jump {
+  animation: jumpUpDown 1s ease-in-out infinite;
+}
+
+.animate-jump:hover {
+  animation: none;
+}
+
+@keyframes jumpUpDown {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
