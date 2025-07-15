@@ -8,9 +8,14 @@ export function FilteredCourse({
   setFilter,
   searchLoading,
   filteredCourses,
+  openSuggestionList,
 }) {
   return (
-    <section className="mt-[110px] lg:mt-[50px] wrapper">
+    <section
+      className={`lg:mt-[50px] ${
+        openSuggestionList ? "" : "mt-[90px]"
+      } wrapper`}
+    >
       {/* Filter */}
       <CourseSearchFilter
         filter={filter}

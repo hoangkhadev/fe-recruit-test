@@ -1,4 +1,4 @@
-import { createContext, useContext } from "react";
+import { createContext, useContext, useState } from "react";
 
 import { useWishlist } from "@/hooks/useWishlist";
 import { useCourses } from "@/hooks/useCourses";
@@ -11,6 +11,13 @@ export const CourseProvider = ({ children }) => {
   const { wishlist, wishListCourses, isFavorite, toggleWishlist } =
     useWishlist(courses);
   const { historyCourses, addToHistory } = useHistory(courses);
+  const [seletedCourse, setSelectedCourse] = useState(null);
+  const handleSelectedCourse = (course) => {
+    setSelectedCourse(course);
+    if (course) {
+      addToHistory(course.id);
+    }
+  };
 
   return (
     <CourseContext.Provider
@@ -20,8 +27,10 @@ export const CourseProvider = ({ children }) => {
         wishlist,
         wishListCourses,
         historyCourses,
+        seletedCourse,
         toggleWishlist,
         isFavorite,
+        handleSelectedCourse,
         addToHistory,
       }}
     >

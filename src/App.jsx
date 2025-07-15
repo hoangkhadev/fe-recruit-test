@@ -18,15 +18,17 @@ const ChatbotPage = lazy(() => import("@/pages/chatbot"));
 
 export default function App() {
   const { pathname } = useLocation();
+  const isChatbotPage = pathname === "/chatbot";
   return (
     <>
       <ScrollToTop />
       <CourseProvider>
         {/* Header */}
         <Header />
-        <div className="min-h-screen flex flex-col justify-between">
-          {/* Content */}
-          <div className="flex-1">
+
+        {/* Content */}
+        <div className="pt-[70px] h-screen flex flex-col">
+          <div className={`flex-1 ${isChatbotPage ? "overflow-hidden" : ""}`}>
             <Suspense fallback={<div>Loading...</div>}>
               <Routes>
                 <Route path="/" Component={HomePage} />
@@ -37,11 +39,12 @@ export default function App() {
               </Routes>
             </Suspense>
           </div>
-
-          {/* Footer */}
-          {pathname !== "/chatbot" && <Footer />}
+          {!isChatbotPage && <Footer />}
         </div>
-        {pathname !== "/chatbot" && <Chatbot />}
+
+        {/* Footer */}
+        {/* </div> */}
+        {!isChatbotPage && <Chatbot />}
       </CourseProvider>
       <Toaster />
     </>

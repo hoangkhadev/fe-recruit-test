@@ -1,5 +1,3 @@
-import { useState } from "react";
-
 import { useCourse } from "@/context/course-context";
 
 import { CourseCard } from "@/components/course/course-card";
@@ -7,12 +5,9 @@ import { CourseDetail } from "@/components/course/course-detail";
 import { CourseSkeletonCard } from "@/components/course/course-skeleton-card";
 
 export function CourseList({ loading, searchLoading, filteredCourses }) {
-  const { toggleWishlist, wishlist, addToHistory } = useCourse();
-  const [seletedCourse, setSelectedCourse] = useState(null);
-  const handleSelectedCourse = (course) => {
-    setSelectedCourse(course);
-    addToHistory(course.id);
-  };
+  const { toggleWishlist, wishlist, seletedCourse, handleSelectedCourse } =
+    useCourse();
+
   if (loading || searchLoading) {
     return (
       <div className="grid xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-4 mt-10">
@@ -44,7 +39,7 @@ export function CourseList({ loading, searchLoading, filteredCourses }) {
       {seletedCourse !== null && (
         <CourseDetail
           course={seletedCourse}
-          onClose={() => setSelectedCourse(null)}
+          onClose={() => handleSelectedCourse(null)}
         />
       )}
     </div>

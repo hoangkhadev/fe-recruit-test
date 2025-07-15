@@ -1,19 +1,26 @@
-import { HeartOutLine, MenuBar, ShoppingBag } from "@/assets/icons";
-
-import { BoxIcon } from "@/components/ui/box-icon";
+import { useState } from "react";
+import { Link, NavLink } from "react-router";
 
 import logo from "@/assets/images/logo.png";
+import { HeartOutLine, MenuBar, ShoppingBag } from "@/assets/icons";
 // import avatar from "@/assets/images/avatar.png";
-import { Button } from "@/components/ui/button";
+
 import { useCourse } from "@/context/course-context";
-import { Link, NavLink } from "react-router";
+import { Button } from "@/components/ui/button";
+import { BoxIcon } from "@/components/ui/box-icon";
+import MenuMobile from "@/components/layout/menu-mobile";
+import { navList } from "@/constants";
 
 export function Header() {
   const { wishlist } = useCourse();
   const wishlistCount = wishlist.length ?? 0;
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-10 border-b border-neutral-200 bg-white">
+    <header
+      id="header"
+      className="fixed left-0 w-full top-0 border-b border-neutral-200 bg-white h-[70px]"
+    >
       <div className="wrapper">
         <nav className="flex items-center justify-between py-4">
           {/* Logo */}
@@ -33,25 +40,20 @@ export function Header() {
 
           {/* Menu */}
           <ul className="hidden lg:flex items-center gap-6">
-            <li className="menu-item">
-              <NavLink
-                to="/"
-                className={({ isActive }) => `${isActive ? "active" : ""}`}
-              >
-                Trang chủ
-              </NavLink>
-            </li>
-            <li className="menu-item">Cộng đồng</li>
-            <li className="menu-item">Về chúng tôi</li>
-            <li className="menu-item">Hỗ trợ</li>
-            <li className="menu-item">
-              <NavLink
-                to="/view-history"
-                className={({ isActive }) => `${isActive ? "active" : ""}`}
-              >
-                Lịch sử xem
-              </NavLink>
-            </li>
+            {navList.map((item, index) => (
+              <li className="menu-item" key={`menu-${index}`}>
+                {item.href ? (
+                  <NavLink
+                    to={item.href}
+                    className={({ isActive }) => `${isActive ? "active" : ""}`}
+                  >
+                    {item.title}
+                  </NavLink>
+                ) : (
+                  item.title
+                )}
+              </li>
+            ))}
           </ul>
 
           {/* Rigth side */}
@@ -65,14 +67,12 @@ export function Header() {
               </BoxIcon>
             </Link>
 
-            <Link to="/cart">
-              <BoxIcon>
-                <ShoppingBag />
-                <p className="absolute top-1 right-1 w-4 h-4 rounded-full bg-rose-500 flex items-center justify-center text-[11px] font-semibold text-white">
-                  0
-                </p>
-              </BoxIcon>
-            </Link>
+            <BoxIcon>
+              <ShoppingBag />
+              <p className="absolute top-1 right-1 w-4 h-4 rounded-full bg-rose-500 flex items-center justify-center text-[11px] font-semibold text-white">
+                0
+              </p>
+            </BoxIcon>
 
             <div className="hidden lg:grid grid-cols-2 gap-2">
               <Button isPrimary={false}>Đăng ký</Button>
@@ -90,9 +90,12 @@ export function Header() {
                 <span>Kha</span>
               </p>
             </div> */}
-            <BoxIcon className="lg:hidden">
+
+            <BoxIcon className="lg:hidden" onClick={() => setIsOpen(true)}>
               <MenuBar />
             </BoxIcon>
+
+            <MenuMobile isOpen={isOpen} setIsOpen={setIsOpen} />
           </div>
         </nav>
       </div>

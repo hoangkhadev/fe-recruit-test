@@ -1,15 +1,15 @@
 import { useEffect, useMemo, useState } from "react";
-import { Helmet } from "react-helmet";
+import { Helmet } from "react-helmet-async";
 
 import { AppConfig } from "@/config/app";
 import { useToast } from "@/hooks/useToast";
-import { useCourses } from "@/hooks/useCourses";
 import { fetchSuggestions } from "@/api/mockApi";
 
 import { FilteredCourse, SearchBanner, SuggestionList } from "@/pages/home";
+import { useCourse } from "@/context/course-context";
 
 export default function HomePage() {
-  const { courses, loading } = useCourses();
+  const { courses, loading, handleSelectedCourse } = useCourse();
   const { showSucess, showError } = useToast();
 
   // Search
@@ -25,8 +25,7 @@ export default function HomePage() {
   const [openSuggestionList, setOpenSuggestionList] = useState(false);
   const [suggestionLoading, setSuggestionLoading] = useState(false);
 
-  const handleSearch = (e) => {
-    e.preventDefault();
+  const handleSearch = () => {
     setSearchLoading(true);
     setTimeout(() => {
       setSearchCourse(
@@ -72,6 +71,12 @@ export default function HomePage() {
     setSearchCourse(courses);
   }, [courses]);
 
+  useEffect(() => {
+    if (search.length === 0) {
+      handleSearch();
+    }
+  }, [search]);
+
   return (
     <div className="pb-5">
       <Helmet>
@@ -89,6 +94,7 @@ export default function HomePage() {
           suggestionCourses={suggestionCourses}
           suggestionLoading={suggestionLoading}
           onClose={() => setOpenSuggestionList(false)}
+          handleSelectedCourse={handleSelectedCourse}
         />
       )}
 
@@ -99,6 +105,7 @@ export default function HomePage() {
         searchLoading={searchLoading}
         searchCourse={searchCourse}
         setFilter={setFilter}
+        openSuggestionList={openSuggestionList}
       />
     </div>
   );

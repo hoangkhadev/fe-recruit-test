@@ -5,9 +5,12 @@
 :root {
   --primary-color: #4fb74c;
   --skeleton-color: #e0e0e0;
+  --z-header: 1000;
+  --z-course-card: 10001;
+  --z-sidebar-chatbot: 999;
 }
 
-@theme {
+@theme inline {
   --color-primary: var(--primary-color);
   --color-skeleton: var(--skeleton-color);
 }
@@ -39,6 +42,26 @@
 
   .menu-item a.active {
     @apply font-semibold text-primary;
+  }
+
+  .message {
+    @apply py-2 px-4 rounded-2xl leading-6;
+  }
+  .userText {
+    @apply self-end bg-primary text-white max-w-2/3;
+  }
+  .botText {
+    @apply self-start bg-neutral-50/40;
+  }
+
+  #header {
+    z-index: var(--z-header);
+  }
+  #sidebar-chatbot {
+    z-index: var(--z-sidebar-chatbot);
+  }
+  .course-detail {
+    z-index: var(--z-course-card);
   }
 }
 

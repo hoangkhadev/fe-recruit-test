@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Helmet } from "react-helmet";
+import { Helmet } from "react-helmet-async";
 
 import { AppConfig } from "@/config/app";
 import { CourseList } from "@/components/course/course-list";

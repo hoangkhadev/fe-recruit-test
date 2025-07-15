@@ -1,115 +1,110 @@
-import React, { useEffect, useRef, useState } from "react";
-import { Helmet } from "react-helmet";
+import { useEffect, useRef } from "react";
+import Markdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import rehypeHighlight from "rehype-highlight";
+import "highlight.js/styles/github.css";
 
-import { AppConfig } from "@/config/app";
-import { BoxIcon } from "@/components/ui/box-icon";
-import { BotMessage } from "@/components/bot-message";
-
+import { Sparkles } from "@/assets/icons";
 import logo from "@/assets/images/logo.png";
-import { PaperAirplane, Plus } from "@/assets/icons";
-import { generateReply } from "@/utils/generate-reply";
+import { useChatbot } from "@/hooks/useChatbot";
+
+import ChatbotSidebar from "@/pages/chatbot/ChatbotSidebar";
+import { ChatbotInput } from "@/pages/chatbot/ChatbotInput";
 
 export default function ChatbotPage() {
-  const [messages, setMessages] = useState([]);
-  const [isBotTyping, setIsBotTyping] = useState(false);
-  const [input, setInput] = useState("");
+  const {
+    message,
+    isBotThinking,
+    currentChatId,
+    chatHistory,
+    currentChat,
+    isTyping,
+    setMessage,
+    addNewChat,
+    renameChat,
+    deleteChat,
+    selectChat,
+    handleSend,
+    handlePause,
+  } = useChatbot();
+
   const bottomRef = useRef(null);
+  const inputRef = useRef(null);
 
-  const handleSend = () => {
-    if (!input.trim()) return;
-
-    const userMsg = { from: "user", text: input };
-    const replyText = generateReply(input, messages);
-    const botReply = {
-      from: "bot",
-      text: replyText,
-    };
-
-    setMessages((prev) => [...prev, userMsg, botReply]);
-    setInput("");
-    setIsBotTyping(true);
+  const handleAddNewChat = () => {
+    addNewChat();
+    inputRef.current.focus();
   };
 
   useEffect(() => {
-    if (messages.length > 0) {
-      bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-    }
-  }, [messages, isBotTyping]);
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [currentChat?.data]);
 
   return (
-    <div className="bg-gradient-to-b from-primary/30 to-white p-6">
-      <Helmet>
-        <title>{AppConfig.appName} | Khám phá các khóa học cùng Udemi AI</title>
-      </Helmet>
-      <div className="max-w-4xl mx-auto text-center">
-        {/* Avatar */}
-        <div className="flex justify-center mb-4">
-          <img
-            src={logo}
-            alt="logo"
-            className="w-20 h-20 rounded-full border-4 border-white shadow"
-          />
-        </div>
+    <div className="bg-gradient-to-b from-primary/30 to-white fixed top-[70px] left-0 right-0 bottom-0">
+      <div className="relative flex h-full overflow-hidden">
+        <ChatbotSidebar
+          chatHistory={chatHistory}
+          addNewChat={handleAddNewChat}
+          currentChatId={currentChatId}
+          selectChat={selectChat}
+          renameChat={renameChat}
+          deleteChat={deleteChat}
+        />
 
-        {/* Greeting */}
-        <h2 className="text-2xl font-bold bg-gradient-to-r from-green-800 to-green-200 text-transparent bg-clip-text">
-          Xin chào!
-        </h2>
-        <h1 className="text-2xl md:text-4xl font-bold mb-6 text-neutral-700">
-          Udemi AI có thể giúp gì cho bạn?
-        </h1>
+        <div className="flex justify-center items-center w-full h-full custom-scrollbar overflow-auto px-6">
+          <div className="w-full max-w-3xl py-10 h-full flex flex-col justify-between">
+            <div className="pb-10 flex-1">
+              {currentChat && currentChat.data?.length > 0 ? (
+                <div className="flex flex-col gap-2">
+                  {currentChat.data.map((m, i) => {
+                    return (
+                      m.message?.length > 0 && (
+                        <div className={`message ${m.from}`} key={i}>
+                          <Markdown
+                            rehypePlugins={[rehypeHighlight]}
+                            remarkPlugins={[remarkGfm]}
+                          >
+                            {m.message}
+                          </Markdown>
+                        </div>
+                      )
+                    );
+                  })}
+                  {isBotThinking && (
+                    <div className="animate-pulse flex items-center gap-2 botText message text-sm">
+                      <Sparkles />
+                      <p>Thinking...</p>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="grid place-items-center text-center gap-2 mt-20">
+                  <img
+                    src={logo}
+                    alt="logo"
+                    className="w-20 h-20 rounded-full border-4 border-white shadow"
+                  />
+                  <h2 className="text-xl font-bold bg-gradient-to-r from-green-800 to-green-400 text-transparent bg-clip-text">
+                    Xin chào!
+                  </h2>
+                  <h1 className="text-2xl md:text-3xl font-bold mb-6 text-neutral-700">
+                    Udemi AI có thể giúp gì cho bạn?
+                  </h1>
+                </div>
+              )}
+            </div>
+            <div ref={bottomRef}></div>
 
-        <div className="flex-1 p-6 overflow-y-auto space-y-4 flex flex-col">
-          {messages.map((msg, idx) => {
-            const isLastMessage = idx === messages.length - 1;
-            if (msg.from === "bot") {
-              return (
-                <BotMessage
-                  key={idx}
-                  fullText={msg.text}
-                  isLastMessage={isLastMessage}
-                />
-              );
-            }
-            return (
-              <div
-                key={idx}
-                className={`px-4 py-2 rounded-lg text-base font-medium whitespace-pre-line ${
-                  msg.from === "bot"
-                    ? "bg-neutral-50 text-gray-800 self-start text-left"
-                    : "bg-primary text-white self-end text-right"
-                }`}
-                style={{
-                  alignSelf: msg.from === "bot" ? "flex-start" : "flex-end",
-                }}
-              >
-                {msg.text}
-              </div>
-            );
-          })}
-          <div ref={bottomRef} />
-        </div>
-
-        {/* Input box */}
-        <div className="sticky bottom-0 w-full left-0">
-          <div className="flex items-center bg-white rounded-xl border border-neutral-300 px-4 py-6 max-w-4xl mx-auto">
-            <BoxIcon className="border border-neutral-200">
-              <Plus className="!size-5" />
-            </BoxIcon>
-            <input
-              type="text"
-              placeholder="Hỏi Udemi AI"
-              className="flex-1 outline-none px-2 font-medium"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleSend()}
+            <ChatbotInput
+              inputRef={inputRef}
+              message={message}
+              setMessage={setMessage}
+              handleSend={handleSend}
+              disabled={isBotThinking}
+              isTyping={isTyping}
+              handlePause={handlePause}
             />
-            <BoxIcon
-              className="!text-gray-400 hover:!text-primary text-xl border border-neutral-200"
-              onClick={handleSend}
-            >
-              <PaperAirplane />
-            </BoxIcon>
           </div>
         </div>
       </div>

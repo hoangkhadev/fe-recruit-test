@@ -18,10 +18,11 @@ export function SearchBanner({
         </p>
 
         <div className="bg-white shadow lg:px-[40px] lg:py-[30px] p-[10px] relative top-[40px] rounded">
-          <form onSubmit={handleSearch} className="grid lg:grid-cols-2 gap-2">
+          <div className="grid lg:grid-cols-2 gap-2">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
               <input
+                onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 type="text"
@@ -30,7 +31,7 @@ export function SearchBanner({
               />
             </div>
             <div className="grid grid-cols-2 gap-2">
-              <Button type="submit" className="h-[50px]">
+              <Button onClick={handleSearch} className="h-[50px]">
                 Tìm khóa học
               </Button>
               <Button
@@ -42,7 +43,7 @@ export function SearchBanner({
                 <p className="whitespace-nowrap">Gợi ý khóa học</p>
               </Button>
             </div>
-          </form>
+          </div>
         </div>
       </div>
     </section>
